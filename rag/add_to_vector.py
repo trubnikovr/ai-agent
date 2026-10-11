@@ -1,4 +1,7 @@
+import sys
+
 from langchain_core.documents import Document
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from db_vector import vector_store
 
@@ -6,51 +9,50 @@ from db_vector import vector_store
 # Документы
 # --------------------------------------------------
 
+texts = [
+    {
+        "text": (
+            "Посейдония — древнегреческий город в Южной Италии, "
+            "на побережье Тирренского моря."
+        ),
+        "source": "paestum_history.txt",
+    },
+    {
+        "text": (
+            "Римляне захватили город в 273 году до нашей эры "
+            "и дали ему название Паестум."
+        ),
+        "source": "paestum_history.txt",
+    },
+    {
+        "text": (
+            "В Паестуме находятся три древних греческих храма "
+            "дорического ордера."
+        ),
+        "source": "paestum_temples.txt",
+    },
+]
+
 documents = [
     Document(
-        page_content=(
-            "Изменение стоимости услуг допускается только "
-            "по письменному соглашению обеих сторон."
-        ),
-        metadata={
-            "source": "contract_rules",
-            "section": "price",
-            "document_id": 1,
-        },
-    ),
-    Document(
-        page_content=(
-            "Срок оплаты составляет 10 рабочих дней "
-            "после подписания акта выполненных работ."
-        ),
-        metadata={
-            "source": "contract_rules",
-            "section": "payment",
-            "document_id": 1,
-        },
-    ),
-    Document(
-        page_content=(
-            "За каждый календарный день просрочки оплаты "
-            "заказчик уплачивает неустойку в размере "
-            "0.1% от суммы задолженности."
-        ),
-        metadata={
-            "source": "contract_rules",
-            "section": "penalty",
-            "document_id": 1,
-        },
-    ),
+        page_content=item["text"],
+        metadata={"source": item["source"]},
+    )
+    for item in texts
 ]
 
-document_ids = [
-    "contract-rule-price",
-    "contract-rule-payment",
-    "contract-rule-penalty",
-]
-
-
-vector_store.add_documents(
-    documents=documents,
-    ids=document_ids,
+# Разбиваем длинные документы на части.
+# Для коротких примеров текст может остаться одним фрагментом.
+splitter = RecursiveCharacterTextSplitter(
+    chunk_size=500,
+    chunk_overlap=50,
 )
+chunks = splitter.split_documents(documents)
+#
+# print(chunks)
+# sys.exit();
+
+
+vector_store.add_documents(chunks)
+
+print(f"Добавлено фрагментов: {len(chunks)}")
