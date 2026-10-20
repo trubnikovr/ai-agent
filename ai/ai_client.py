@@ -7,17 +7,10 @@ from pydantic import BaseModel
 
 
 class AIClient:
-    def __init__(self):
-        config = dotenv_values(".env")
-
-        api_key = config.get("GEMINI_API_KEY")
-
-        if not api_key:
-            raise ValueError("GEMINI_API_KEY не найден в .env")
-
+    def __init__(self, api_key: str, model: str, temperature: float = 0):
         self._client = ChatGoogleGenerativeAI(
-            model="gemini-3.5-flash-lite",
-            temperature=0,
+            model=model,
+            temperature=temperature,
             google_api_key=api_key,
         )
         
@@ -71,4 +64,23 @@ class AIClient:
         return parallel_chain.invoke(variables)
 
 
-ai_client = AIClient()
+def create_ai_client(
+    api_key: str | None = None,
+    model: str = "gemini-3.5-flash-lite",
+    temperature: float = 0,
+) -> AIClient:
+    if api_key is None:
+        config = dotenv_values(".env")
+        api_key = config.get("GEMINI_API_KEY")
+
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY не найден в .env")
+
+    return AIClient(
+        api_key=api_key,
+        model=model,
+        temperature=temperature,
+    )
+
+
+ai_client = create_ai_client()

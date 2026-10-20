@@ -2,7 +2,7 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 from ai.ai_client import ai_client
-from db_vector import vector_store
+from stores.db_vector import vector_store
 
 from pydantic import BaseModel, Field
 
@@ -24,7 +24,7 @@ question = "А кто его основал?"
 
 
 # Поиск в PostgreSQL/pgvector
-documents = vector_store.similarity_search(question, k=2)
+documents = vector_store.similarity_search("contract_rules", question, k=2)
 
 # Собираем тексты найденных фрагментов в одну строку
 # Передаём модели текст каждого фрагмента и его источник

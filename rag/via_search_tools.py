@@ -2,7 +2,7 @@ from langchain.agents import create_agent
 from langchain_core.tools import tool
 
 from ai.ai_client import ai_client
-from db_vector import vector_store
+from stores.db_vector import vector_store
 
 
 @tool
@@ -15,6 +15,7 @@ def search_contract_rules(query: str) -> str:
     """
 
     results = vector_store.similarity_search(
+        collection_name="contract_rules",
         query=query,
         k=3,
     )

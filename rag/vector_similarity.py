@@ -1,12 +1,12 @@
 from langchain_core.prompts import ChatPromptTemplate
 
 from ai.ai_client import ai_client
-from db_vector import vector_store
+from stores.db_vector import vector_store
 
 question = "Кто переименовал Посейдонию в Паестум?"
 
 # Поиск в PostgreSQL/pgvector
-documents = vector_store.similarity_search(question, k=2)
+documents = vector_store.similarity_search("contract_rules", question, k=2)
 
 # Собираем тексты найденных фрагментов в одну строку
 context = "\n\n".join(

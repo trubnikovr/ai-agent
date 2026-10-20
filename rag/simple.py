@@ -1,13 +1,13 @@
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
 
-from db_vector import vector_store
+from stores.db_vector import vector_store
 from ai.ai_client import ai_client
 
 
 question = "Кто переименовал Посейдонию в Паестум?"
 
-results = vector_store.similarity_search(question, k=2)
+results = vector_store.similarity_search("contract_rules", question, k=2)
 
 for document in results:
     print("Источник:", document.metadata.get("source"))
@@ -17,6 +17,7 @@ for document in results:
 
 # 5. Настроить retriever и prompt
 retriever = vector_store.as_retriever(
+    "contract_rules",
     search_kwargs={"k": 2},
 )
 

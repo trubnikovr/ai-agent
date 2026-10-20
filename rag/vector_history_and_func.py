@@ -2,7 +2,7 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 from ai.ai_client import ai_client
-from db_vector import vector_store
+from stores.db_vector import vector_store
 
 from pydantic import BaseModel, Field
 
@@ -30,7 +30,7 @@ prompt = ChatPromptTemplate.from_messages([
 
 def ask(question: str) -> str:
     # Ищем документы по текущему вопросу
-    documents = vector_store.similarity_search(question, k=3)
+    documents = vector_store.similarity_search("contract_rules", question, k=3)
 
     context = "\n\n".join(
         document.page_content
@@ -38,13 +38,24 @@ def ask(question: str) -> str:
     )
 
     # Собираем prompt из контекста, истории и вопроса
-    messages = structured_llm.invoke({
+    messages = prompt.invoke({
         "context": context,
         "chat_history": chat_history,
         "question": question,
     })
-    print(messages)
+
+    answer = structured_llm.invoke(messages)
+
+    chat_history.extend([
+        HumanMessage(content=question),
+        AIMessage(content=answer.text),
+    ])
+
+    return answer
+
+
 
 
 
 print(ask("Расскажи о Паестуме."))
+print(ask("А кто его основал?"))

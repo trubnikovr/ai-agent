@@ -1,6 +1,7 @@
-from db_vector import vector_store
+from stores.db_vector import vector_store
 
 results = vector_store.similarity_search_with_score(
+    collection_name="contract_rules",
     query="Может ли исполнитель увеличить стоимость?",
     k=2,
 )

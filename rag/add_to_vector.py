@@ -1,9 +1,7 @@
-import sys
-
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from db_vector import vector_store
+from stores.db_vector import vector_store
 
 # --------------------------------------------------
 # Документы
@@ -53,6 +51,6 @@ chunks = splitter.split_documents(documents)
 # sys.exit();
 
 
-vector_store.add_documents(chunks)
+vector_store.add_documents("contract_rules", chunks)
 
 print(f"Добавлено фрагментов: {len(chunks)}")
