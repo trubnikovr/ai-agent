@@ -19,6 +19,8 @@ class ContractTableManager:
     def create_tables(self) -> None:
         Base.metadata.create_all(self._engine)
 
+
+
     def prepare_embeddings(self, embeddings) -> int:
         # Узнаём размерность, вызвав ту же модель, которая будет кодировать тексты.
         sample_vector = embeddings.embed_query("Проверка размерности")
